@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACK BOX - Gestor de Listas</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    :root {
+      --color-bg: #000000;
+      --color-principal: #00c853;
+      --color-texto: #ffffff;
+      --color-secundario: #121212;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-texto);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ---------- HEADER ---------- */
+    .header {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--color-secundario);
+      border-bottom: 3px solid var(--color-principal);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+
+    .header img {
+      max-width: 180px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 10px var(--color-principal));
+    }
+
+    .header h1 {
+      margin: 10px 0 5px 0;
+      font-size: 2.5rem;
+      color: var(--color-principal);
+      text-shadow: 0 0 8px rgba(0,200,83,0.6);
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin: 0;
+    }
+
+    /* ---------- CONTENEDOR PRINCIPAL ---------- */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #101010;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+
+    .section { margin-bottom: 40px; }
+
+    h2 {
+      color: var(--color-principal);
+      border-bottom: 2px solid var(--color-principal);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ---------- INPUTS Y SELECT ---------- */
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="file"], select, input[type="range"], input[type="number"], input[type="text"] {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    #porcentajeLabel {
+      display: inline-block;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: var(--color-principal);
+    }
+
+    /* ---------- BOTONES ---------- */
+    button {
+      background: var(--color-principal);
+      color: #fff;
+      padding: 14px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 8px 5px 15px 0;
+      font-weight: bold;
+      transition: 0.3s;
+      font-size: 1rem;
+    }
+
+    button:hover { 
+      background: #00a342;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,200,83,0.4);
+    }
+
+    /* ---------- TABLAS ---------- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    table th, table td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #222;
+    }
+
+    table thead {
+      background: var(--color-principal);
+      color: white;
+    }
+
+    table tbody tr:nth-child(even) {
+      background: #181818;
+    }
+
+    table tbody tr:hover {
+      background: #222;
+    }
+
+    .export-buttons { 
+      margin-top: 20px; 
+      text-align: center;
+    }
+
+    /* ---------- FOOTER ---------- */
+    #footer {
+      text-align: center;
+      padding: 25px;
+      background: var(--color-secundario);
+      border-top: 3px solid var(--color-principal);
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-top: auto;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="logo.png" alt="Black Box Logo">
+    <h1>BLACK BOX DESCARTABLES</h1>
+    <p>Gestor de Listas de Precios y Presupuestos</p>
+  </div>
+
+  <div class="container">
+    <!-- Subida de archivo -->
+    <div class="section">
+      <h2>Subir Lista Base</h2>
+      <label>Archivo de precios:</label>
+      <input type="file" id="fileInput" accept=".pdf,.csv,.xls,.xlsx" />
+    </div>
+
+    <!-- Configuración de lista -->
+    <div class="section">
+      <h2>Configuración de Lista</h2>
+      <label>Tipo de lista:</label>
+      <select id="tipoLista">
+        <option value="publico" selected>Precio Público</option>
+        <option value="mayorista">Mayorista</option>
+      </select>
+
+      <label>% de aumento:</label>
+      <input type="range" id="porcentaje" min="10" max="100" value="50" step="5" />
+      <span id="porcentajeLabel">50%</span>
+
+      <button onclick="processFile()">Convertir Lista</button>
+    </div>
+
+    <!-- Vista previa -->
+    <div class="section">
+      <h2>Vista Previa de Precios</h2>
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio Final</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="export-buttons">
+        <button onclick="exportExcel()">Exportar a Excel</button>
+        <button onclick="exportPDF()">Exportar a PDF</button>
+      </div>
+    </div>
+
+    <!-- Presupuesto -->
+    <div class="section">
+      <h2>Crear Presupuesto</h2>
+      <label>Seleccionar Producto:</label>
+      <select id="productoPresupuesto"></select>
+
+      <label>Cantidad:</label>
+      <input type="number" id="cantidadPresupuesto" value="1" min="1">
+      <button onclick="agregarPresupuesto()">Agregar al Presupuesto</button>
+
+      <label>Nombre del Cliente:</label>
+      <input type="text" id="nombreCliente" placeholder="Ej: Juan Pérez">
+
+      <label>Validez (días):</label>
+      <input type="number" id="validez" value="7" min="1" style="width: 80px;">
+
+      <table class="presupuesto-lista" id="presupuestoTable">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Final</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button onclick="exportarPresupuestoPDF()">Generar PDF Presupuesto</button>
+      <button onclick="limpiarPresupuesto()" style="background:#ff1744;">Nuevo Presupuesto</button>
+
+    </div>
+  </div>
+
+  <div id="footer">Desarrollado por M.L Desarrollos Web ©</div>
+</body>
+</html>
+
+
+  <!-- Librerías -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <script>
+    // ---------------- CONFIGURACIÓN INICIAL ----------------
+    let productosProcesados = [];
+    let presupuesto = [];
+
+    document.getElementById("porcentaje").addEventListener("input", (e) => {
+      document.getElementById("porcentajeLabel").textContent = e.target.value + "%";
+    });
+
+    // ---------------- PROCESAMIENTO DE ARCHIVOS ----------------
+    async function processFile() {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) return alert("Selecciona un archivo");
+
+      const margin = parseInt(document.getElementById("porcentaje").value);
+      const tbody = document.querySelector("#priceTable tbody");
+      tbody.innerHTML = '';
+      productosProcesados = [];
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (['csv', 'xlsx', 'xls'].includes(ext)) {
+        await processExcelOrCSV(file, margin);
+      } else if (ext === 'pdf') {
+        await processPDF(file, margin);
+      } else {
+        alert("Formato no soportado todavía.");
+      }
+    }
+
+    async function processExcelOrCSV(file, margin) {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      const tbody = document.querySelector("#priceTable tbody");
+      const select = document.getElementById("productoPresupuesto");
+      select.innerHTML = "";
+
+      rows.forEach((row, index) => {
+        if (index === 0 || !row[0] || !row[1]) return;
+        const nombre = row[0];
+        const precioBase = parseFloat(row[1]) || 0;
+        const precioFinal = precioBase + (precioBase * margin / 100);
+
+        productosProcesados.push({ nombre, precio: precioFinal, cantidad: 1, total: precioFinal });
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${nombre}</td><td>$${precioFinal.toFixed(2)}</td>`;
+        tbody.appendChild(tr);
+
+        const option = document.createElement("option");
+        option.value = nombre;
+        option.textContent = nombre;
+        select.appendChild(option);
+      });
+    }
+
+    async function processPDF(file, margin) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const lines = content.items.map(item => item.str).join(' ').split('$');
+
+        lines.forEach((line, index) => {
+          if (index === 0) return;
+          const parts = line.trim().split(/\s+/);
+          const priceStr = parts.shift();
+          const price = parseFloat(priceStr.replace('.', '').replace(',', '.'));
+          if (!isNaN(price)) {
+            const nombre = parts.join(' ').trim();
+            const precioFinal = price + (price * margin / 100);
+
+            productosProcesados.push({ nombre, precio: precioFinal, cantidad: 1, total: precioFinal });
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${nombre}</td><td>$${precioFinal.toFixed(2)}</td>`;
+            document.querySelector("#priceTable tbody").appendChild(tr);
+
+            const option = document.createElement("option");
+            option.value = nombre;
+            option.textContent = nombre;
+            document.getElementById("productoPresupuesto").appendChild(option);
+          }
+        });
+      }
+    }
+
+    // ---------------- EXPORTAR LISTA A PDF ----------------
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const img = new Image();
+      img.src = "logo.png"; 
+      doc.addImage(img, 'PNG', 80, 10, 50, 20);
+
+      doc.setFontSize(14);
+      doc.text("BLACK BOX DESCARTABLES", 105, 40, { align: "center" });
+      doc.setFontSize(10);
+      doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 46, { align: "center" });
+
+      const tableData = productosProcesados.map(p => [p.nombre, `$${p.precio.toFixed(2)}`]);
+      doc.autoTable({
+        head: [['Producto', 'Precio Final']],
+        body: tableData,
+        startY: 60,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 200, 0] }
+      });
+
+      doc.save("Lista_Precios.pdf");
+    }
+
+    // ---------------- PRESUPUESTO ----------------
+    function agregarPresupuesto() {
+      const producto = document.getElementById("productoPresupuesto").value;
+      const cantidad = parseInt(document.getElementById("cantidadPresupuesto").value);
+      if (!producto || cantidad < 1) return;
+
+      const prod = productosProcesados.find(p => p.nombre === producto);
+      if (!prod) return;
+
+      const total = prod.precio * cantidad;
+      presupuesto.push({ nombre: producto, cantidad, precio: prod.precio, total });
+
+      const tbody = document.querySelector("#presupuestoTable tbody");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${producto}</td>
+        <td>${cantidad}</td>
+        <td>$${prod.precio.toFixed(2)}</td>
+        <td>$${total.toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function exportarPresupuestoPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const img = new Image();
+      img.src = "logo.png"; 
+      doc.addImage(img, 'PNG', 80, 10, 50, 20);
+
+      
+
+      doc.setFontSize(14);
+      doc.text("BLACK BOX DESCARTABLES", 105, 40, { align: "center" });
+      doc.setFontSize(10);
+      doc.text("Av. Colón 3235 - Alto Alberdi - Córdoba", 105, 46, { align: "center" });
+      doc.text("WhatsApp: 351 808 1076 - Alias: BLACKBOX.17.MP", 105, 52, { align: "center" });
+      doc.text("Envíos a Domicilio", 105, 58, { align: "center" });
+
+      const cliente = document.getElementById("nombreCliente").value || "Consumidor Final";
+      const fecha = new Date().toLocaleDateString();
+      const validezDias = document.getElementById("validez").value || 7;
+      doc.text(`Cliente: ${cliente}`, 20, 75);
+      doc.text(`Fecha: ${fecha}`, 150, 75);
+
+      const tableData = presupuesto.map(p => [p.nombre, p.cantidad, `$${p.precio.toFixed(2)}`, `$${p.total.toFixed(2)}`]);
+      doc.autoTable({
+        head: [['Producto', 'Cant.', 'Precio Unit.', 'Total']],
+        body: tableData,
+        startY: 85,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 200, 0] }
+      });
+
+      const total = presupuesto.reduce((sum, p) => sum + p.total, 0);
+      doc.setFontSize(14);
+      doc.setTextColor(0, 150, 0);
+      doc.text(`TOTAL PRESUPUESTO: $${total.toLocaleString("es-AR")}`, 20, doc.lastAutoTable.finalY + 15);
+
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text("PRECIOS ABONANDO EN EFECTIVO/TRANSFERENCIA (TARJ. CRÉDITO Y DÉBITO CON RECARGO)", 20, doc.lastAutoTable.finalY + 25);
+      doc.text(`Presupuesto válido por ${validezDias} días`, 20, doc.lastAutoTable.finalY + 32);
+
+      doc.save(`Presupuesto_${cliente}_${fecha}.pdf`);
+    }
+    function limpiarPresupuesto() {
+  presupuesto = []; // Vaciar array
+  document.querySelector("#presupuestoTable tbody").innerHTML = ""; // Vaciar tabla
+  document.getElementById("nombreCliente").value = ""; // Limpiar nombre cliente
+  document.getElementById("cantidadPresupuesto").value = 1; // Reset cantidad
+}
+
+
+    // ---------------- HACER VISIBLE ----------------
+    window.processFile = processFile;
+    window.exportExcel = () => exportExcel();
+    window.exportPDF = exportPDF;
+    window.agregarPresupuesto = agregarPresupuesto;
+    window.exportarPresupuestoPDF = exportarPresupuestoPDF;
+    window.processPDF = processPDF; // <- necesario
+  </script>
+</body>
+</html>
