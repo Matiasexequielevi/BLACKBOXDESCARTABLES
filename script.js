@@ -101,7 +101,7 @@ function generarEncabezadoPDF(doc) {
   logo.src = "logo.png";
 
   // Logo centrado
-  doc.addImage(logo, "PNG", 70, 10, 70, 35);
+  doc.addImage(logo, "PNG", 30, 10, 150, 60);
   // Datos de empresa centrados
   doc.setFontSize(14).setFont(undefined, "bold").setTextColor(0, 0, 0);
   doc.text("BLACK BOX DESCARTABLES", 105, 50, { align: "center" });
