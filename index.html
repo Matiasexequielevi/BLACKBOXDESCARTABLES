@@ -350,6 +350,7 @@
     }
 
     // ---------------- EXPORTAR LISTA A PDF ----------------
+// ---------------- EXPORTAR LISTA A PDF ----------------
 function exportPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -369,6 +370,16 @@ function exportPDF() {
   doc.setFont(undefined, "normal");
   doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 66, { align: "center" });
 
+  // --- Logo de Instagram ---
+  const igLogo = new Image();
+  igLogo.src = "instagram.png";
+  doc.addImage(igLogo, "PNG", 60, 72, 8, 8); // pequeño, alineado a la izquierda
+
+  // --- Texto Instagram al lado ---
+  doc.setFontSize(11);
+  doc.setFont(undefined, "bold");
+  doc.text("@blackbox.descartables", 72, 78); // un poco a la derecha del logo
+
   // --- Tabla de precios ---
   const tableData = productosProcesados.map(p => [
     p.nombre,
@@ -378,14 +389,15 @@ function exportPDF() {
   doc.autoTable({
     head: [['Producto', 'Precio Final']],
     body: tableData,
-    startY: 80, // más abajo para que no tape el logo
+    startY: 90, // más abajo para que no tape el encabezado
     theme: 'grid',
     headStyles: { fillColor: [0, 200, 0] }
   });
 
-  // --- Guardar ---
+  // --- Guardar PDF ---
   doc.save("Lista_Precios.pdf");
 }
+
 
 
     // ---------------- PRESUPUESTO ----------------
