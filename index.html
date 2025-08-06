@@ -350,30 +350,43 @@
     }
 
     // ---------------- EXPORTAR LISTA A PDF ----------------
-    function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-      const img = new Image();
-      img.src = "logo.png"; 
-      doc.addImage(img, 'PNG', 80, 10, 50, 20);
+  // --- Logo grande y centrado ---
+  const img = new Image();
+  img.src = "logo.png";
+  doc.addImage(img, 'PNG', 30, 10, 150, 45); // ancho 150, alto 45
 
-      doc.setFontSize(14);
-      doc.text("BLACK BOX DESCARTABLES", 105, 40, { align: "center" });
-      doc.setFontSize(10);
-      doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 46, { align: "center" });
+  // --- Título y subtítulo ---
+  doc.setFontSize(14);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(0, 0, 0);
+  doc.text("BLACK BOX DESCARTABLES", 105, 60, { align: "center" });
 
-      const tableData = productosProcesados.map(p => [p.nombre, `$${p.precio.toFixed(2)}`]);
-      doc.autoTable({
-        head: [['Producto', 'Precio Final']],
-        body: tableData,
-        startY: 60,
-        theme: 'grid',
-        headStyles: { fillColor: [0, 200, 0] }
-      });
+  doc.setFontSize(10);
+  doc.setFont(undefined, "normal");
+  doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 66, { align: "center" });
 
-      doc.save("Lista_Precios.pdf");
-    }
+  // --- Tabla de precios ---
+  const tableData = productosProcesados.map(p => [
+    p.nombre,
+    `$${p.precio.toFixed(2)}`
+  ]);
+
+  doc.autoTable({
+    head: [['Producto', 'Precio Final']],
+    body: tableData,
+    startY: 80, // más abajo para que no tape el logo
+    theme: 'grid',
+    headStyles: { fillColor: [0, 200, 0] }
+  });
+
+  // --- Guardar ---
+  doc.save("Lista_Precios.pdf");
+}
+
 
     // ---------------- PRESUPUESTO ----------------
     function agregarPresupuesto() {
