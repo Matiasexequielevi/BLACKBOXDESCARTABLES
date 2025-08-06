@@ -100,16 +100,18 @@ function generarEncabezadoPDF(doc) {
   const logo = new Image();
   logo.src = "logo.png";
 
-  // Logo centrado
-  doc.addImage(logo, "PNG", 30, 10, 150, 60);
-  // Datos de empresa centrados
+  // Logo grande y centrado
+  doc.addImage(logo, "PNG", 30, 10, 150, 45); 
+
+  // Datos de empresa centrados y más abajo para no chocar con el logo
   doc.setFontSize(14).setFont(undefined, "bold").setTextColor(0, 0, 0);
-  doc.text("BLACK BOX DESCARTABLES", 105, 50, { align: "center" });
+  doc.text("BLACK BOX DESCARTABLES", 105, 60, { align: "center" });
+
   doc.setFontSize(10).setFont(undefined, "normal");
-  doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 56, { align: "center" });
-  doc.text("Av. Colón 3233 - Alto Alberdi - Córdoba", 105, 62, { align: "center" });
-  doc.text("WhatsApp: 351 808 1076 - Alias: BLACKBOX.17.MP", 105, 68, { align: "center" });
-  doc.text("Envíos a Domicilio", 105, 74, { align: "center" });
+  doc.text("LOS MEJORES PRECIOS PARA TU NEGOCIO", 105, 66, { align: "center" });
+  doc.text("Av. Colón 3233 - Alto Alberdi - Córdoba", 105, 72, { align: "center" });
+  doc.text("WhatsApp: 351 808 1076 - Alias: BLACKBOX.17.MP", 105, 78, { align: "center" });
+  doc.text("Envíos a Domicilio", 105, 84, { align: "center" });
 }
 
 // ---------------- SISTEMA DE PRESUPUESTOS ----------------

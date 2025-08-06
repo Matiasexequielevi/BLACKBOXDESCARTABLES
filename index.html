@@ -402,46 +402,65 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      const img = new Image();
-      img.src = "logo.png"; 
-      doc.addImage(img, 'PNG', 80, 10, 150, 60);
+     // --- Logo grande y centrado ---
+  const img = new Image();
+  img.src = "logo.png";
+  doc.addImage(img, 'PNG', 30, 10, 150, 45); // ancho 150 y altura 45
 
-      
+  // --- Datos de la empresa centrados debajo del logo ---
+  doc.setFontSize(14);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(0, 0, 0);
+  doc.text("BLACK BOX DESCARTABLES", 105, 60, { align: "center" });
 
-      doc.setFontSize(14);
-      doc.text("BLACK BOX DESCARTABLES", 105, 40, { align: "center" });
-      doc.setFontSize(10);
-      doc.text("Av. Colón 3235 - Alto Alberdi - Córdoba", 105, 46, { align: "center" });
-      doc.text("WhatsApp: 351 808 1076 - Alias: BLACKBOX.17.MP", 105, 52, { align: "center" });
-      doc.text("Envíos a Domicilio", 105, 58, { align: "center" });
+  doc.setFontSize(10);
+  doc.setFont(undefined, "normal");
+  doc.text("Av. Colón 3235 - Alto Alberdi - Córdoba", 105, 66, { align: "center" });
+  doc.text("WhatsApp: 351 808 1076 - Alias: BLACKBOX.17.MP", 105, 72, { align: "center" });
+  doc.text("Envíos a Domicilio", 105, 78, { align: "center" });
 
-      const cliente = document.getElementById("nombreCliente").value || "Consumidor Final";
-      const fecha = new Date().toLocaleDateString();
-      const validezDias = document.getElementById("validez").value || 7;
-      doc.text(`Cliente: ${cliente}`, 20, 75);
-      doc.text(`Fecha: ${fecha}`, 150, 75);
+  // --- Datos del presupuesto ---
+  const cliente = document.getElementById("nombreCliente").value || "Consumidor Final";
+  const fecha = new Date().toLocaleDateString();
+  const validezDias = document.getElementById("validez").value || 7;
+  doc.text(`Cliente: ${cliente}`, 20, 90);
+  doc.text(`Fecha: ${fecha}`, 150, 90);
 
-      const tableData = presupuesto.map(p => [p.nombre, p.cantidad, `$${p.precio.toFixed(2)}`, `$${p.total.toFixed(2)}`]);
-      doc.autoTable({
-        head: [['Producto', 'Cant.', 'Precio Unit.', 'Total']],
-        body: tableData,
-        startY: 85,
-        theme: 'grid',
-        headStyles: { fillColor: [0, 200, 0] }
-      });
+  // --- Tabla de productos ---
+  const tableData = presupuesto.map(p => [
+    p.nombre,
+    p.cantidad,
+    `$${p.precio.toFixed(2)}`,
+    `$${p.total.toFixed(2)}`
+  ]);
 
-      const total = presupuesto.reduce((sum, p) => sum + p.total, 0);
-      doc.setFontSize(14);
-      doc.setTextColor(0, 150, 0);
-      doc.text(`TOTAL PRESUPUESTO: $${total.toLocaleString("es-AR")}`, 20, doc.lastAutoTable.finalY + 15);
+  doc.autoTable({
+    head: [['Producto', 'Cant.', 'Precio Unit.', 'Total']],
+    body: tableData,
+    startY: 100,
+    theme: 'grid',
+    headStyles: { fillColor: [0, 200, 0] }
+  });
 
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.text("PRECIOS ABONANDO EN EFECTIVO/TRANSFERENCIA (TARJ. CRÉDITO Y DÉBITO CON RECARGO)", 20, doc.lastAutoTable.finalY + 25);
-      doc.text(`Presupuesto válido por ${validezDias} días`, 20, doc.lastAutoTable.finalY + 32);
+  // --- Total del presupuesto ---
+  const total = presupuesto.reduce((sum, p) => sum + p.total, 0);
+  doc.setFontSize(14);
+  doc.setTextColor(0, 150, 0);
+  doc.text(`TOTAL PRESUPUESTO: $${total.toLocaleString("es-AR")}`, 20, doc.lastAutoTable.finalY + 15);
 
-      doc.save(`Presupuesto_${cliente}_${fecha}.pdf`);
-    }
+  // --- Condiciones ---
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+  doc.text(
+    "PRECIOS ABONANDO EN EFECTIVO/TRANSFERENCIA (TARJ. CRÉDITO Y DÉBITO CON RECARGO)",
+    20,
+    doc.lastAutoTable.finalY + 25
+  );
+  doc.text(`Presupuesto válido por ${validezDias} días`, 20, doc.lastAutoTable.finalY + 32);
+
+  // --- Guardar ---
+  doc.save(`Presupuesto_${cliente}_${fecha}.pdf`);
+}
     function limpiarPresupuesto() {
   presupuesto = []; // Vaciar array
   document.querySelector("#presupuestoTable tbody").innerHTML = ""; // Vaciar tabla
