@@ -421,10 +421,18 @@ function exportPDF() {
   doc.addImage(img, 'PNG', 30, 10, 150, 45); // ancho 150 y altura 45
 
   // --- Datos de la empresa centrados debajo del logo ---
-  doc.setFontSize(14);
-  doc.setFont(undefined, "bold");
-  doc.setTextColor(0, 0, 0);
-  doc.text("BLACK BOX DESCARTABLES", 105, 60, { align: "center" });
+const igLogo = new Image();
+igLogo.src = "instagram.png"; // asegúrate de tener esta imagen en la misma carpeta
+
+// Dibujar logo de Instagram
+doc.addImage(igLogo, 'PNG', 85, 60, 8, 8); // X, Y, Ancho, Alto
+
+// Texto de Instagram al lado del logo
+doc.setFontSize(12);
+doc.setFont(undefined, "bold");
+doc.setTextColor(0, 0, 0);
+doc.text("@blackbox.descartables", 105, 66, { align: "center" });
+
 
   doc.setFontSize(10);
   doc.setFont(undefined, "normal");
